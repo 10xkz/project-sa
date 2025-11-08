@@ -19,7 +19,7 @@ const DetailPage: React.FC = () => {
   const [deleteLoading, setDeleteLoading] = useState<number | null>(null);
 
   useEffect(() => {
-    if (dogId && !isNaN(parseInt(dogId))) {
+    if (dogId && !isNaN(parseInt(dogId))) { //มีค่าและเป็นตัวเลขที่แปลงได้จริง
       fetchDogAndHealthRecords();
     } else {
       message.error("รหัสสุนัขไม่ถูกต้อง");
@@ -62,16 +62,14 @@ const DetailPage: React.FC = () => {
     navigate(`/dashboard/health-record/${dogId}/add`);
   };
 
-  // ✅ ใช้ตรงจาก Popconfirm → ไม่ต้องใช้ Modal.confirm
   const performDelete = async (medId: number) => {
-    console.log("[DEL] performDelete ->", medId);
     setDeleteLoading(medId);
     try {
       const resp = await healthRecordAPI.deleteHealthRecord(medId);
       console.log("[DEL] API resp:", resp); // BE อาจตอบ 204 No Content ได้
       message.success("ลบเรียบร้อยแล้ว");
       setDogHealthRecords((prevRecords) =>
-        prevRecords.filter((record) => record.ID !== medId)
+        prevRecords.filter((record) => record.ID !== medId) //สร้าง array ใหม่ที่ตัด record ที่ถูกลบออกไป
       );
     } catch (err) {
       console.error("[DEL] error:", err);
@@ -85,7 +83,7 @@ const DetailPage: React.FC = () => {
     navigate("/dashboard/health-record");
   };
 
-  const formatDate = (dateString: string | null | undefined) => {
+  const formatDate = (dateString: string | null | undefined) => { //ช่วยจัดรูปแบบวันที่
     if (!dateString) return "-";
     try {
       return new Date(dateString).toLocaleDateString("th-TH");
@@ -94,7 +92,7 @@ const DetailPage: React.FC = () => {
     }
   };
 
-  const truncateText = (
+  const truncateText = ( //ช่วยตัดข้อความให้สั้นลง
     text: string | null | undefined,
     maxLength: number = 50
   ) => {
@@ -147,7 +145,7 @@ const DetailPage: React.FC = () => {
       <Card className="health-detail-card">
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <img
-            src={selectedDog.photo_url}
+            src={selectedDog.photo_url ?? undefined}
             alt={selectedDog.name}
             style={{
               width: "150px",
@@ -229,7 +227,6 @@ const DetailPage: React.FC = () => {
                         ดูรายละเอียดเพิ่มเติม
                       </Button>
 
-                      {/* ✅ ใช้ Popconfirm แทน Modal.confirm */}
                       <Popconfirm
                         title={<div style={{ fontFamily: "Anakotmai-Bold" }}>{"ยืนยันการลบ"}</div>}
                         description={<div style={{ fontFamily: "Anakotmai-Bold" }}>{"คุณแน่ใจว่าต้องการลบประวัติสุขภาพนี้หรือไม่? การลบจะไม่สามารถกู้คืนได้"}</div>}

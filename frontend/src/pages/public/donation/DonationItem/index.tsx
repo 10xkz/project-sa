@@ -11,8 +11,6 @@ interface DonationItemFormState {
   unitId: string;
 }
 
-
-
 // Helper to get initial state from sessionStorage
 const getInitialFormData = () => {
   try {

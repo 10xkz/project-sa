@@ -116,18 +116,11 @@ const DonationMoneyForm: React.FC = () => {
         sessionStorage.setItem('signupPrefillData', JSON.stringify(signupPrefillData));
       }
 
-      // Set the return path after login
-      // For monthly, it's always credit card.
-      // For one-time, we come back here to be redirected again by navigateToNextPage.
       let returnTo = '/donation/money';
 
       if (isMonthly) {
-        // รายเดือนบังคับบัตรเครดิต
         returnTo = '/donation/payment/creditcard';
       } else {
-        // รายครั้ง: ดูจาก paymentMethod ที่เลือก
-        // หมายเหตุ: ปกติค่าเป็น ID (1=บัตรเครดิต, 2=พร้อมเพย์/โอน)
-        // เผื่อค่ามาเป็นชื่อ ก็รองรับไว้ทั้งสองแบบ
         if (values.paymentMethod === 1 || values.paymentMethod === 'บัตรเครดิต') {
           returnTo = '/donation/payment/creditcard';
         } else if (values.paymentMethod === 2 || values.paymentMethod === 'พร้อมเพย์') {
@@ -139,7 +132,6 @@ const DonationMoneyForm: React.FC = () => {
 
       navigate('/auth/users');
     } else {
-      // If not signing up, proceed to payment directly
       navigateToNextPage(type, values.paymentMethod);
     }
   };

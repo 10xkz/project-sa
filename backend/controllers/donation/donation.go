@@ -4,7 +4,6 @@ package donation
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -36,7 +35,7 @@ func tryUserIDFromContext(c *gin.Context) *uint {
 	return nil
 }
 
-// ===== Handler (เวอร์ชันที่ "เคารพ guest" แม้จะมี token) =====
+//  guest" แม้จะมี token
 func CreateDonation(c *gin.Context) {
 	var payload CombinedDonationPayload
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -73,11 +72,11 @@ func CreateDonation(c *gin.Context) {
 	var donorToUse entity.Donor
 
 	if authedUserID != nil {
-		// ===== โหมดผู้ใช้ล็อกอิน =====
-		// ยึด user_id จาก token เสมอ (ignore user_id ที่ client ส่งมา)
+		// ผู้ใช้ล็อกอิน
+		// ยึด user_id จาก token
 		if err := tx.Where("user_id = ?", *authedUserID).First(&donorToUse).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// ยังไม่เคยมี donor record สำหรับ user นี้ → สร้างใหม่
+				// ยังไม่เคยมี donor record สำหรับ user นี้  สร้างใหม่
 				donorToUse = entity.Donor{
 					UserID:    authedUserID,
 					FirstName: incoming.FirstName,
@@ -98,7 +97,7 @@ func CreateDonation(c *gin.Context) {
 			}
 		}
 	} else {
-		// ===== โหมด guest =====
+		// guest
 		// กัน payload แอบยัด: บังคับเคลียร์ user_id และตั้ง donor_type = guest
 		incoming.ID = 0
 		incoming.UserID = nil
@@ -197,7 +196,7 @@ func CreateDonation(c *gin.Context) {
 // - ถ้าไม่พบ donor → คืน [] (200)
 // - คืนรายการพร้อม preload relations ให้ FE ใช้ได้ทันที
 func GetMyDonations(c *gin.Context) {
-	log.Println("--- GetMyDonations function called ---")
+
 	uidAny, ok := c.Get("user_id")
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing user id in context"})
@@ -272,12 +271,12 @@ func GetAllDonations(c *gin.Context) {
 }
 
 func UpdateDonationStatus(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("id") // อ่าน ID จาก URL
 	var payload struct {
 		Status string `json:"status"`
 	}
 
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	if err := c.ShouldBindJSON(&payload); err != nil { // อ่านจาก body map เป็น struct
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
 		return
 	}
@@ -313,7 +312,7 @@ func UpdateDonationStatus(c *gin.Context) {
 	})
 }
 func DeleteDonation(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("id") // อ่าน ID จาก URL
 	db := configs.DB()
 
 	// เริ่ม transaction

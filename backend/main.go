@@ -77,6 +77,7 @@ func main() {
 	r.PUT("/health-records/:id", health_record.UpdateHealthRecord)
 	r.DELETE("/health-records/:id", health_record.DeleteHealthRecord)
 	r.GET("/health-records/:id", health_record.GetHealthRecordById)
+	
 	r.POST("/visits", visit.CreateVisit)
 
 	r.GET("/animal-sexes", dog.GetAllAnimalSexes)
@@ -149,10 +150,10 @@ func main() {
 		protected.POST("/sponsorships/subscriptions/:id/reactive", sponsorship.ReactivateSubscription)
 		protected.GET("/my-adoptions", adopter.GetMyCurrentAdoptions)
 
-		protected.GET("/donations/my", donation.GetMyDonations)
-		protected.GET("/donations", donation.GetAllDonations)
-		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus)
-		protected.DELETE("/donations/:id", donation.DeleteDonation)
+		protected.GET("/donations/my", donation.GetMyDonations) //donaiton
+		protected.GET("/donations", donation.GetAllDonations) //donaiton
+		protected.PUT("/donations/:id/status", donation.UpdateDonationStatus) //donaiton
+		protected.DELETE("/donations/:id", donation.DeleteDonation)  //donaiton
 		protected.GET("/sponsorships/my", sponsorship.GetMySponsorships)
 		protected.POST("/files/dogs", dog.UploadDogImage)
 		protected.POST("/zcmanagement/log", zcmanagement.CreateZCManagementLog)
@@ -163,7 +164,7 @@ func main() {
 	}
 	don := r.Group("/donations", middlewares.OptionalAuthorize())
 	{
-		don.POST("", donation.CreateDonation)
+		don.POST("", donation.CreateDonation) //donaiton
 	}
 
 	// health

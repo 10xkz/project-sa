@@ -124,11 +124,6 @@ const DonationSummaryPage: React.FC = () => {
       return;
     }
 
-    console.log("Data from sessionStorage on Summary Page:", {
-      donorInfoString,
-      itemDetailsString,
-    });
-
     try {
       const donorInfo: DonorInterface = JSON.parse(donorInfoString);
       const itemDetailsRaw = JSON.parse(itemDetailsString);

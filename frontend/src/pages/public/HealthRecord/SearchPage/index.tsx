@@ -129,12 +129,6 @@ const SearchPage: React.FC = () => {
                   <Text type="secondary">สายพันธุ์: {dog.breed.name}</Text>
                 </div>
               )}
-              
-              {dog.age && (
-                <div style={{ marginTop: '4px' }}>
-                  <Text type="secondary">อายุ: {dog.age} ปี</Text>
-                </div>
-              )}
             </div>
           </Card>
         ))}

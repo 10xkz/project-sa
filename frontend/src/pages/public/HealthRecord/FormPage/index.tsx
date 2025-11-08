@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message, Spin } from 'antd';
+import { message } from 'antd';
 import { 
   Form, 
   Input, 
@@ -35,12 +35,10 @@ const { Title } = Typography;
 const { TextArea } = Input;
 
 const FormPage: React.FC = () => {
-    const { id: dogId, recordId } = useParams<{ id: string; recordId?: string }>();
+  const { id: dogId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [hasVaccination, setHasVaccination] = useState<string>('NO');
   const [vaccines, setVaccines] = useState<vaccine[]>([]);
   const [vaccineRecords, setVaccineRecords] = useState<vaccineRecord[]>([]);
@@ -55,20 +53,16 @@ const FormPage: React.FC = () => {
     // Load vaccines list
     loadVaccines();
 
-    if (recordId && !isNaN(parseInt(recordId))) {
-      setIsEditMode(true);
-      fetchRecordForEdit();
-    } else {
-      // Initialize form for new record
-      form.resetFields();
-      form.setFieldsValue({
-        recordDate: dayjs(),
-        hasVaccination: 'NO',
-      });
-      setHasVaccination('NO');
-      setVaccineRecords([]);
-    }
-  }, [recordId, dogId, form]);
+    // Initialize form for new record
+    form.resetFields();
+    form.setFieldsValue({
+      recordDate: dayjs(),
+      hasVaccination: 'NO',
+    });
+    setHasVaccination('NO');
+    setVaccineRecords([]);
+    
+  }, [dogId, form]);
 
   const loadVaccines = async () => {
     try {
@@ -77,35 +71,6 @@ const FormPage: React.FC = () => {
     } catch (error) {
       console.error('Error loading vaccines:', error);
       message.error('ไม่สามารถโหลดข้อมูลวัคซีนได้');
-    }
-  };
-
-  const fetchRecordForEdit = async () => {
-    if (!recordId) return;
-
-    setLoading(true);
-    try {
-      const record = await healthRecordAPI.getHealthRecordById(parseInt(recordId));
-      
-      const hasVacc = record.vaccination === 'YES' ? 'YES' : 'NO';
-      setHasVaccination(hasVacc);
-      
-      form.setFieldsValue({
-        ...record,
-        recordDate: record.recordDate ? dayjs(record.recordDate) : dayjs(),
-        nextAppointment: record.nextAppointment ? dayjs(record.nextAppointment) : null,
-        hasVaccination: hasVacc,
-      });
-
-      if (hasVacc === 'YES' && record.vaccine_records && record.vaccine_records.length > 0) {
-        setVaccineRecords(record.vaccine_records);
-      }
-    } catch (error) {
-      message.error('ไม่สามารถโหลดข้อมูลประวัติสุขภาพสำหรับแก้ไขได้');
-      console.error('Fetch record error:', error);
-      navigate(`/dashboard/health-record/dog/${dogId}`);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -121,7 +86,7 @@ const FormPage: React.FC = () => {
   const addVaccineRecord = () => {
     const newRecord: vaccineRecord = {
       ID: 0, // Default non-existent ID
-      med_id: parseInt(recordId || '0'),
+      med_id: 0,
       vaccine_id: 0,
       dose_number: 1,
       lot_number: '',
@@ -133,7 +98,7 @@ const FormPage: React.FC = () => {
   const removeVaccineRecord = (index: number) => {
     if (vaccineRecords.length > 1) {
       const newRecords = [...vaccineRecords];
-      newRecords.splice(index, 1);
+      newRecords.splice(index, 1); //ลบเฉพาะ index ที่เลือก
       setVaccineRecords(newRecords);
     }
   };
@@ -143,7 +108,7 @@ const FormPage: React.FC = () => {
     const recordToUpdate = { ...newRecords[index] };
     (recordToUpdate as any)[field] = value;
     newRecords[index] = recordToUpdate;
-    setVaccineRecords(newRecords);
+    setVaccineRecords(newRecords);  //อัปเดตเฉพาะ index ที่แก้ แล้วเซ็ตกลับเข้า state
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -200,20 +165,11 @@ const FormPage: React.FC = () => {
     };
 
     try {
-      if (isEditMode && recordId) {
-        await healthRecordAPI.updateHealthRecord(parseInt(recordId), payload.health_record);
-        message.success('อัปเดตข้อมูลสุขภาพเรียบร้อยแล้ว');
-      } else {
-        await healthRecordAPI.createHealthRecord(payload);
-        message.success('บันทึกข้อมูลสุขภาพเรียบร้อยแล้ว');
-      }
+      await healthRecordAPI.createHealthRecord(payload);
+      message.success('บันทึกข้อมูลสุขภาพเรียบร้อยแล้ว');
       navigate(`/dashboard/health-record/dog/${dogId}`);
     } catch (error) {
-      message.error(
-        isEditMode 
-          ? 'ไม่สามารถอัปเดตข้อมูลสุขภาพได้' 
-          : 'ไม่สามารถบันทึกข้อมูลสุขภาพได้'
-      );
+      message.error('ไม่สามารถบันทึกข้อมูลสุขภาพได้');
       console.error('Submit error:', error);
     } finally {
       setSubmitLoading(false);
@@ -238,17 +194,6 @@ const FormPage: React.FC = () => {
     return Promise.resolve();
   };
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '100px' }}>
-        <Spin size="large" />
-        <div style={{ marginTop: '16px' }}>
-          <Typography.Text>กำลังโหลดข้อมูล...</Typography.Text>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="health-form-page">
       <div className="form-header">
@@ -263,7 +208,7 @@ const FormPage: React.FC = () => {
         </Button>
         
         <Title level={2} className="page-title" style={{ fontFamily: 'Anakotmai-Bold',marginTop: '20px',marginLeft: '30px',color: '#FF6600' }}>
-          {isEditMode ? 'แก้ไขบันทึกสุขภาพ' : 'บันทึกสุขภาพสุนัข'}
+          {'บันทึกสุขภาพสุนัข'}
         </Title>
       </div>
 
@@ -576,10 +521,10 @@ const FormPage: React.FC = () => {
                 size="large"
                 loading={submitLoading}
                 className="submit-button"
-                icon={isEditMode ? null : <HeartOutlined />}
+                icon={<HeartOutlined />}
                 style={{ fontFamily: 'Anakotmai-Bold' }}
               >
-                {isEditMode ? 'อัปเดต' : 'บันทึก'}
+                {'บันทึก'}
               </Button>
             </Space>
           </Form.Item>

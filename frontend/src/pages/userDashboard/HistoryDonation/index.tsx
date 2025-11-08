@@ -85,8 +85,6 @@ const MyDonations: React.FC = () => {
       setError(null);
       const response = (await donationAPI.getMyDonations()) as any;
       
-      console.log('API Response:', response); // เพิ่ม log เพื่อตรวจสอบ structure
-      
       if (response && Array.isArray(response)) {
         setDonations(response);
       } else {
@@ -159,7 +157,7 @@ const MyDonations: React.FC = () => {
   const getFilteredDonations = () => {
     switch (activeTab) {
       case 'money':
-        return donations.filter((d) => d.donation_type === 'money');
+        return donations.filter((d) => d.donation_type === 'money');  //กรอง donations ให้เหลือเฉพาะที่ donation_type === 'money'
       case 'items':
         return donations.filter((d) => d.donation_type === 'item');
       default:

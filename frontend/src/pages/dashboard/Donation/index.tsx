@@ -154,7 +154,7 @@ const DonationHistory: React.FC = () => {
     try {
       setLoading(true);
 
-      // เรียก API ลบจริง
+      // เรียก API
       await donationAPI.remove(record.ID!);
 
       // ลบจาก state

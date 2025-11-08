@@ -27,17 +27,14 @@ const InformationDonors: React.FC = () => {
 
   useEffect(() => {
     const prefillData = sessionStorage.getItem('prefillUserData');
-    console.log("InformationDonors: Retrieved prefillData from sessionStorage:", prefillData); // Log retrieved data
     if (prefillData) {
       try {
         const parsedPrefillData = JSON.parse(prefillData);
-        console.log("InformationDonors: Parsed prefillData:", parsedPrefillData); // Log parsed data
         setFirstName(parsedPrefillData.first_name || '');
         setLastName(parsedPrefillData.last_name || '');
         setPhone(parsedPrefillData.phone || '');
         setEmail(parsedPrefillData.email || '');
         sessionStorage.removeItem('prefillUserData'); // Clear after use
-        console.log("InformationDonors: Form fields set with prefill data."); // Confirm fields set
       } catch (error) {
         console.error("Error parsing prefill user data:", error);
       }

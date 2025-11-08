@@ -19,10 +19,7 @@ import {
   Mail,
   Settings,
   LogOut,
-  ChevronRight,
-  ChevronLeft,
   Plus,
-  MoreVertical,
   Edit,
   Captions,
   Users,
@@ -65,7 +62,7 @@ const UpdatedDashboard: React.FC = () => {
   const location = useLocation();
 
   // ✅ ดึงข้อมูลพนักงาน
-  const { staff, loading: staffLoading, error } = useStaffMe({ autoFetch: true });
+  const { staff, loading: staffLoading } = useStaffMe({ autoFetch: true });
 
   // Menu items definition
   const menuItems: MenuItem[] = [
@@ -252,8 +249,8 @@ const UpdatedDashboard: React.FC = () => {
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="logo-section">
-            <div className="logo-icon">C</div>
-            <span className="logo-text">Course</span>
+            <div className="logo-icon">D</div>
+            <span className="logo-text">Dog Care</span>
           </div>
         </div>
 

@@ -138,7 +138,7 @@ const SingleDetailPage: React.FC = () => {
     }
   };
 
-  const handleEditToggle = () => {
+  const handleEditToggle = () => {  //ปุ่ม toggle Edit/Cancel
     if (editMode) {
       // Cancel edit mode - restore original values
       if (healthRecord) {
@@ -248,9 +248,6 @@ const SingleDetailPage: React.FC = () => {
     })) : []
   };
 
-  // Debug: Log data being sent
-  console.log('Data being sent to backend:', healthRecordData);
-  console.log('Record ID:', recordId);
 
   try {
     const response = await healthRecordAPI.updateHealthRecord(parseInt(recordId), healthRecordData);

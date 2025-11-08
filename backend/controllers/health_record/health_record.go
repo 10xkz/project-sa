@@ -208,7 +208,7 @@ func UpdateHealthRecord(c *gin.Context) {
 	}
 
 	if existingRecord.Vaccination == "YES" {
-		incomingVaccineMap := make(map[uint]bool)
+		incomingVaccineMap := make(map[uint]bool) // สร้างแมพเพื่อหาว่าไอดีมีอยู่ไหม
 		for _, in := range updateData.VaccineRecords {
 			if in.ID != 0 {
 				incomingVaccineMap[in.ID] = true
